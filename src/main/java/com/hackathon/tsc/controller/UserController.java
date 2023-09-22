@@ -25,6 +25,11 @@ public class UserController {
             return new ResponseEntity<>(userNotFoundException.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
+    @GetMapping
+    public String login() {
+        return "Hello";
+    }
+
 
     @GetMapping("/logout")
     public ResponseEntity<Boolean> logout() {
