@@ -101,7 +101,7 @@ public class ServiceRepository {
         }
     }
 
-    public Service addDefaultService(String beneficiaryID){
+    public Service addDefaultService(String navigatorID, String beneficiaryID){
         Service service = new Service();
         service.setServiceID(String.valueOf(System.currentTimeMillis()));
         service.setStatus("IN PROGRESS");
@@ -109,6 +109,7 @@ public class ServiceRepository {
         String comment = "Service " + service.getServiceName() + " is " + service.getStatus();
         service.setActivityLog(List.of(new Activity(comment, Instant.now().toString())));
         service.setBeneficiaryID(beneficiaryID);
+        service.setNavigatorID(navigatorID);
         service.setOrganizationName("The SpringBoard Collaborative");
         dynamoDBMapper.save(service);
         return service;
