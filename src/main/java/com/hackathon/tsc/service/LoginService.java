@@ -71,10 +71,9 @@ public class LoginService {
     }
 
     public void getAttribute() {
-        User user = new User("B1", "B1", "B1", "B1", UserType.BENEFICIARY.toString(), "B1");
+        User user = new User("N3", "N3", "N3", "N3", UserType.NAVIGATOR.toString(), "N3");
         loginRepository.save(user);
-        Beneficiary beneficiary = new Beneficiary("B1", "Cabin1", List.of("MH1"),
-                List.of("SUD1"), List.of("N1"), "N1", List.of("D1"), List.of("SR1"));
-        beneficiaryRepository.save(beneficiary);
+        Navigator navigator = new Navigator("N3", List.of("B1"));
+        navigatorRepository.save(navigator);
     }
 }

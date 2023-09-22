@@ -20,6 +20,11 @@ public class AwsConfig {
         return new DynamoDBMapper(buildAmazonDynamoDB());
     }
 
+    @Bean
+    public AmazonDynamoDB dynamoDB() {
+        return buildAmazonDynamoDB();
+    }
+
     private AmazonDynamoDB buildAmazonDynamoDB() {
         return AmazonDynamoDBClientBuilder
                 .standard()
@@ -32,8 +37,8 @@ public class AwsConfig {
                 .withCredentials(
                         new AWSStaticCredentialsProvider(
                                 new BasicAWSCredentials(
-                                        "***",
-                                        "*****"
+                                        "#",
+                                        "#"
                                 )
                         )
                 )
@@ -42,8 +47,8 @@ public class AwsConfig {
 
     @Bean
     public AmazonS3 s3(){
-        AWSCredentials awsCredentials=new BasicAWSCredentials("***",
-                "***");
+        AWSCredentials awsCredentials=new BasicAWSCredentials("#",
+                "#");
         return AmazonS3ClientBuilder.standard().withRegion("ap-southeast-2").withCredentials(new AWSStaticCredentialsProvider(awsCredentials)).build();
     }
 }

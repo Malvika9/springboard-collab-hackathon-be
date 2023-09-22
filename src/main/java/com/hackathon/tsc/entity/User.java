@@ -26,7 +26,8 @@ public class User {
     private String lastName;
 
     @DynamoDBAttribute
-    private transient String password;
+    @JsonIgnore
+    private String password;
 
     @DynamoDBAttribute
     private String userType;

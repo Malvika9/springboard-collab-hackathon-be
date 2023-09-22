@@ -1,9 +1,14 @@
 package com.hackathon.tsc.repository;
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.ItemConverter;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
+import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.hackathon.tsc.entity.Beneficiary;
 import com.hackathon.tsc.entity.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,20 +19,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.amazonaws.services.route53.model.ResettableElementName.Regions;
+
 @Repository
 public class BeneficiaryRepository {
 
     @Autowired
     private DynamoDBMapper dynamoDBMapper;
 
-
+    @Autowired
+    private AmazonDynamoDB amazonDynamoDB;
 
     public Optional<Beneficiary> getBeneficiaryByUserID(String userID) {
         Beneficiary beneficiary = new Beneficiary();
         beneficiary.setBeneficiaryID(userID);
         Beneficiary result = dynamoDBMapper.load(beneficiary,
                 new DynamoDBMapperConfig(DynamoDBMapperConfig.ConsistentReads.CONSISTENT));
-        return Optional.ofNullable(result);
+        return Optional.of(result);
     }
 
     public Beneficiary save(Beneficiary beneficiary) {
@@ -75,9 +83,20 @@ public class BeneficiaryRepository {
     }
 
     public List<Beneficiary> getAllBeneficiaries() {
-//        Amazon
-        return dynamoDBMapper.scan(Beneficiary.class, new DynamoDBScanExpression());
+        List<Beneficiary> beneficiaries = new ArrayList<>();
+        Map<String, AttributeValue> lastKeyEvaluated = null;
+        do {
+            ScanRequest scanRequest = new ScanRequest()
+                    .withTableName("Beneficiary")
+                    .withLimit(10)
+                    .withExclusiveStartKey(lastKeyEvaluated);
+
+            ScanResult result = amazonDynamoDB.scan(scanRequest);
+            for (Map<String, AttributeValue> item : result.getItems()){
+                beneficiaries.add(dynamoDBMapper.marshallIntoObject(Beneficiary.class, item));
+            }
+            lastKeyEvaluated = result.getLastEvaluatedKey();
+        } while (lastKeyEvaluated != null);
+        return beneficiaries;
     }
 }
-
-

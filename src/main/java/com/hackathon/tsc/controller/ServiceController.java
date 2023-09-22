@@ -1,6 +1,7 @@
 package com.hackathon.tsc.controller;
 
 import com.hackathon.tsc.entity.Service;
+import com.hackathon.tsc.exception.ServiceNotFoundException;
 import com.hackathon.tsc.exception.UserNotFoundException;
 import com.hackathon.tsc.service.FileService;
 import com.hackathon.tsc.service.Services;
@@ -8,11 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/tsc/services")
+@RequestMapping("/services")
 public class ServiceController {
 
     @Autowired
@@ -32,15 +34,12 @@ public class ServiceController {
         }
     }
 
-    @GetMapping("/{beneficiaryID}")
-    public ResponseEntity<List<String>> getGoals(@PathVariable String beneficiaryID){
-        try {
-            List<String> needs = services.getNeedForBID(beneficiaryID);
-            return new ResponseEntity<>(needs, HttpStatus.OK);
-        } catch (UserNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
+//    @GetMapping("/{beneficiaryID}")
+//    public ResponseEntity<List<String>> getGoals(@PathVariable String beneficiaryID){
+//        List<String> needs = services.getNeedForBID(beneficiaryID);
+//        return new ResponseEntity<>(needs, HttpStatus.OK);
+//    }
 
     @PostMapping
     public ResponseEntity<List<Service>> addService(@RequestBody Service serviceToAdd) {
@@ -53,20 +52,20 @@ public class ServiceController {
     }
 
 
-    //@PostMapping("/upload/{serviceID}")
-//    public ResponseEntity<Boolean> addFileToService(@PathVariable String serviceID, @RequestParam("file") MultipartFile file) {
-//        String fileName = serviceID + "_" + file.getOriginalFilename();
-//        fileService.saveFile(file, fileName);
-//        Service service = services.getServiceById(serviceID);
-//        service.getSupportingDocs().add(fileName);
-//        try {
-//            services.updateService(service);
-//        } catch (ServiceNotFoundException e) {
-//            return new ResponseEntity<>(true, HttpStatus.BAD_REQUEST);
-//        }
-//        return new ResponseEntity<>(true, HttpStatus.OK);
-//    }
-//
+    @PostMapping("/upload/{serviceID}")
+    public ResponseEntity<Boolean> addFileToService(@PathVariable String serviceID, @RequestParam("file") MultipartFile file) {
+        String fileName = serviceID + "_" + file.getOriginalFilename();
+        fileService.saveFile(file, fileName);
+        Service service = services.getServiceById(serviceID);
+        service.getSupportingDocs().add(fileName);
+        try {
+            services.updateService(service);
+        } catch (ServiceNotFoundException e) {
+            return new ResponseEntity<>(true, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
     @PostMapping("/download/{fileName}")
     public ResponseEntity<byte[]> downloadFileByFileName(@PathVariable String fileName) {
         return new ResponseEntity<>(fileService.downloadFile(fileName), HttpStatus.OK);
