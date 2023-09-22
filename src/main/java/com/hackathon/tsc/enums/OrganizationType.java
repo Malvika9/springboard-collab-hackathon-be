@@ -1,4 +1,4 @@
-package com.hackathon.tsc.Enum;
+package com.hackathon.tsc.enums;
 
 public enum OrganizationType {
 

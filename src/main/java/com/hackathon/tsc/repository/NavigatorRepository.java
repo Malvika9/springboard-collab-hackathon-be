@@ -1,25 +1,30 @@
 package com.hackathon.tsc.repository;
 
-import com.hackathon.tsc.pojo.Navigator;
-import com.hackathon.tsc.pojo.User;
-import org.springframework.stereotype.Service;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import com.hackathon.tsc.entity.Navigator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
-@Service
+@Repository
 public class NavigatorRepository {
 
-    List<Navigator> dummyNavigator;
+    @Autowired
+    private DynamoDBMapper dynamoDBMapper;
 
-    public NavigatorRepository() {
-        dummyNavigator = List.of(new Navigator(3L, List.of(1L)));
+    public Optional<Navigator> getNavigatorByUserID(String userID) {
+        Navigator navigator = new Navigator();
+        navigator.setNavigatorID(userID);
+        Navigator result = dynamoDBMapper.load(navigator,
+                new DynamoDBMapperConfig(DynamoDBMapperConfig.ConsistentReads.CONSISTENT));
+        return Optional.of(result);
     }
 
-    public Optional<Navigator> getNavigatorById(Long id) {
-        return dummyNavigator.stream().filter(navigator ->
-                navigator.getId().equals(id)
-        ).findFirst();
+    public Navigator save(Navigator navigator) {
+        dynamoDBMapper.save(navigator);
+        return navigator;
     }
 
 }

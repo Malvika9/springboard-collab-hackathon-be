@@ -1,90 +1,78 @@
 package com.hackathon.tsc.service;
 
-import com.hackathon.tsc.Enum.UserType;
-import com.hackathon.tsc.exception.UserNotFoundException;
-import com.hackathon.tsc.pojo.Beneficiary;
-import com.hackathon.tsc.pojo.CaseWorker;
-import com.hackathon.tsc.pojo.Navigator;
-import com.hackathon.tsc.pojo.User;
-import com.hackathon.tsc.repository.BeneficiaryRepository;
-import com.hackathon.tsc.repository.CaseWorkerRepository;
-import com.hackathon.tsc.repository.NavigatorRepository;
-import com.hackathon.tsc.repository.UserRepository;
-import jakarta.servlet.http.HttpSession;
+
+
+import com.hackathon.tsc.constant.UserType;
+import com.hackathon.tsc.entity.Beneficiary;
+import com.hackathon.tsc.entity.CaseWorker;
+import com.hackathon.tsc.entity.Navigator;
+import com.hackathon.tsc.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private CaseWorkerRepository caseWorkerRepository;
-
+    private LoginRepository loginRepository;
     @Autowired
     private NavigatorRepository navigatorRepository;
-
+    @Autowired
+    private CaseWorkerRepository caseWorkerRepository;
     @Autowired
     private BeneficiaryRepository beneficiaryRepository;
 
     @Autowired
-    private HttpSession httpSession;
+    private ServiceRepository serviceRepository;
 
-    public User validateCredentials(String userName, String password) throws UserNotFoundException {
-        Optional<User> userOptional = userRepository.getUserByNameAndPassword(userName, password);
-        if(userOptional.isEmpty()) {
-            throw new UserNotFoundException("Invalid username and password");
+    public List<Beneficiary> getAssignedBeneficiaries(String userID) {
+        //query and return assigned beneficiaries
+        List<Beneficiary> beneficiariesList = new ArrayList<>();
+        Optional<String> userType = loginRepository.getUserTypeByUserID(userID);
+        if(userType.isPresent() && userType.get().equals(UserType.NAVIGATOR)) {
+            Optional<Navigator> navigator = navigatorRepository.getNavigatorByUserID(userID);
+            if(navigator.isPresent()) {
+                List<String> beneficiariesIds = navigator.get().getAssignedBeneficiariesId();
+                beneficiariesList = beneficiaryRepository.getBeneficiariesByIdList(beneficiariesIds);
+            }
+        } else if (userType.isPresent() && userType.get().equals(UserType.CASE_WORKER)) {
+            Optional<CaseWorker> caseWorker = caseWorkerRepository.getCaseWorkerByUserID(userID);
+            if(caseWorker.isPresent()) {
+                List<String> beneficiariesIds = new ArrayList<>(caseWorker.get().getServiceID().
+                        stream().map(serviceId -> serviceRepository.getServiceById(serviceId).get().
+                                getBeneficiaryID()).collect(Collectors.toSet()));
+                beneficiariesList = beneficiaryRepository.getBeneficiariesByIdList(beneficiariesIds);
+            }
         }
-        else {
-            User user = userOptional.get();
-            if(user.getUserType().equals(UserType.CASE_WORKER.toString())) {
-                Optional<CaseWorker> caseWorkerOptional = caseWorkerRepository.getCaseWorkerById(user.getId());
-                if(caseWorkerOptional.isEmpty()) {
-                    throw new UserNotFoundException("User not found");
-                }
-                CaseWorker caseWorker = caseWorkerOptional.get();
-                httpSession.setAttribute("user", user);
-                httpSession.setAttribute("caseWorker", caseWorker);
-            }
-            else if(user.getUserType().equals(UserType.NAVIGATOR.toString())) {
-                Optional<Navigator> navigatorOptional = navigatorRepository.getNavigatorById(user.getId());
-                if(navigatorOptional.isEmpty()) {
-                    throw new UserNotFoundException("User not found");
-                }
-                Navigator navigator = navigatorOptional.get();
-                httpSession.setAttribute("user", user);
-                httpSession.setAttribute("navigator", navigator);
-            }
-            else if(user.getUserType().equals(UserType.BENEFICIARY.toString())) {
-                Optional<Beneficiary> beneficiaryOptional = beneficiaryRepository.getBeneficiaryById(user.getId());
-                if(beneficiaryOptional.isEmpty()) {
-                    throw new UserNotFoundException("User not found");
-                }
-                Beneficiary beneficiary = beneficiaryOptional.get();
-                httpSession.setAttribute("user", user);
-                httpSession.setAttribute("beneficiary", beneficiary);
-            }
-            else {
-                throw new UserNotFoundException("User id not found");
-            }
-
-            return user;
-        }
+        return beneficiariesList;
     }
 
-    public void logout() {
-        httpSession.invalidate();
+    public List<Beneficiary> getUnassignedBeneficiaries() {
+        //query and return unassigned beneficiaries
+        List<Beneficiary> assignedBeneficiaries = new ArrayList<>();
+        assignedBeneficiaries.add(example);
+        return assignedBeneficiaries;
     }
 
-    public void getAttribute() {
-        System.out.println(httpSession.getAttributeNames());
+    public boolean assignNavigator(String beneficiaryID, String navigatorID) {
+        //update nId field for beneficiary and return
+        return beneficiaryRepository.assignNavigator(beneficiaryID, navigatorID);
     }
 
-    public boolean isUserLoggedIn() {
-        return httpSession.getAttribute("user") != null;
+    public boolean unAssignNavigator(String beneficiaryID) {
+        //update nId field to null for beneficiary and return
+        return beneficiaryRepository.assignNavigator(beneficiaryID, null);
+    }
+
+    public Beneficiary addBeneficiary(Beneficiary newBeneficiary) {
+        beneficiaryRepository.save(newBeneficiary);
+        return newBeneficiary;
+    }
+
+    public boolean deleteBeneficiary(String beneficiaryID) {
+        return beneficiaryRepository.deleteBeneficiary(beneficiaryID);
     }
 }

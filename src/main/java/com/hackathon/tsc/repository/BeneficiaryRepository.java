@@ -1,25 +1,74 @@
 package com.hackathon.tsc.repository;
 
-import com.hackathon.tsc.pojo.Beneficiary;
-import com.hackathon.tsc.pojo.Navigator;
-import org.springframework.stereotype.Service;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import com.hackathon.tsc.entity.Beneficiary;
+import com.hackathon.tsc.entity.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-@Service
+@Repository
 public class BeneficiaryRepository {
 
-    List<Beneficiary> dummyBeneficiary;
+    @Autowired
+    private DynamoDBMapper dynamoDBMapper;
 
-    public BeneficiaryRepository() {
-        dummyBeneficiary = List.of(new Beneficiary(1L, "MH19", List.of("MH1"), List.of("S1"), List.of("N1"),
-               3L, List.of("D1"), List.of(1L)));
+    public Optional<Beneficiary> getBeneficiaryByUserID(String userID) {
+        Beneficiary beneficiary = new Beneficiary();
+        beneficiary.setBeneficiaryID(userID);
+        Beneficiary result = dynamoDBMapper.load(beneficiary,
+                new DynamoDBMapperConfig(DynamoDBMapperConfig.ConsistentReads.CONSISTENT));
+        return Optional.of(result);
     }
 
-    public Optional<Beneficiary> getBeneficiaryById(Long id) {
-        return dummyBeneficiary.stream().filter(navigator ->
-                navigator.getId().equals(id)
-        ).findFirst();
+    public Beneficiary save(Beneficiary beneficiary) {
+        dynamoDBMapper.save(beneficiary);
+        return beneficiary;
+    }
+
+    public List<Beneficiary> getBeneficiariesByIdList(List<String> userID) {
+        List<Beneficiary> beneficiaries = new ArrayList<>();
+        for (String beneficiaryID : userID) {
+            Beneficiary beneficiary = new Beneficiary();
+            beneficiary.setBeneficiaryID(beneficiaryID);
+            beneficiaries.add(beneficiary);
+        }
+        Map<String, List<Object>> batchResult = dynamoDBMapper.batchLoad(beneficiaries);
+        if (batchResult.containsKey("Beneficiary")
+                && batchResult.get("Beneficiary") != null) {
+            List<Object> articles = batchResult.get("Beneficiary");
+            //Convert the list of Objects into "ArticlesDao
+            @SuppressWarnings("unchecked")
+            List<Beneficiary> articlesDaos = (List<Beneficiary>) (List<?>) articles;
+            return articlesDaos;
+        }
+        return null;
+    }
+    public boolean assignNavigator(String beneficiaryID, String navigatorID) {
+        Beneficiary beneficiary = new Beneficiary();
+        beneficiary.setBeneficiaryID(beneficiaryID);
+        Beneficiary result = dynamoDBMapper.load(beneficiary,
+                new DynamoDBMapperConfig(DynamoDBMapperConfig.ConsistentReads.CONSISTENT));
+        if(navigatorID == null) {
+            result.setNavigatorID(navigatorID);
+        }
+        else {
+            result.setNavigatorID(navigatorID);
+        }
+        dynamoDBMapper.save(result);
+        return true;
+    }
+
+    public Boolean deleteBeneficiary(String id) {
+        Beneficiary beneficiary = dynamoDBMapper.load(Beneficiary.class, id);
+        dynamoDBMapper.delete(beneficiary);
+        return true;
     }
 }
+
+
