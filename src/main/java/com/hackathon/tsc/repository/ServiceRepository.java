@@ -77,7 +77,7 @@ public class ServiceRepository {
                     new DynamoDBQueryExpression<Service>()
                             .withHashKeyValues(service)
                             .withLimit(20)
-                            .withIndexName("beneficiaryID-index")
+                            .withIndexName("beneficiaryID-navigatorID-index")
                             .withConsistentRead(false);
             List<Service> queryResult = dynamoDBMapper.query(Service.class, queryExpression);
             queryResult.forEach(System.out::println);
@@ -85,12 +85,12 @@ public class ServiceRepository {
         } else if (userType.equals(UserType.CASE_WORKER)) {
             Service service = new Service();
             service.setBeneficiaryID(beneficiaryID);
-            service.setNavigatorID(userId);
+            service.setCaseWorkerID(userId);
             DynamoDBQueryExpression<Service> queryExpression =
                     new DynamoDBQueryExpression<Service>()
                             .withHashKeyValues(service)
                             .withLimit(20)
-                            .withIndexName("navigatorID-index")
+                            .withIndexName("beneficiaryID-navigatorID-index")
                             .withConsistentRead(false);
             List<Service> queryResult = dynamoDBMapper.query(Service.class, queryExpression);
             queryResult.forEach(System.out::println);
