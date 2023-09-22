@@ -36,7 +36,7 @@ public class Services {
                 throw  new UserNotFoundException(USER_NOT_FOUND);
     }
 
-    public List<Service> addServiceForBID(Service service) throws UserNotFoundException {
+    public List<Service> addServiceForBID(Service service){
             servicesRepository.addService(service);
             return servicesRepository.getServicesForId(UserType.NAVIGATOR, service.getNavigatorID(), service.getBeneficiaryID());
     }

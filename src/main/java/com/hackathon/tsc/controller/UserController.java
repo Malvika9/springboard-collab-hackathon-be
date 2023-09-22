@@ -23,6 +23,12 @@ public class UserController {
         this.loginService = loginService;
     }
 
+    @GetMapping("/allBeneficiaries")
+    public ResponseEntity<List<Beneficiary>> getAllBeneficiaries() {
+        List<Beneficiary> beneficiaryList = userService.getAllBeneficiaries();
+        return new ResponseEntity<>(beneficiaryList, HttpStatus.OK);
+    }
+
     @GetMapping("/beneficiaries")
     public ResponseEntity<List<Beneficiary>> getAssignedBeneficiaries(@RequestParam String id) {
         List<Beneficiary> beneficiaryList = userService.getAssignedBeneficiaries(id);

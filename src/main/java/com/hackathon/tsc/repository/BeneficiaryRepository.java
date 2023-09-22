@@ -2,6 +2,8 @@ package com.hackathon.tsc.repository;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.hackathon.tsc.entity.Beneficiary;
 import com.hackathon.tsc.entity.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ public class BeneficiaryRepository {
 
     @Autowired
     private DynamoDBMapper dynamoDBMapper;
+
+
 
     public Optional<Beneficiary> getBeneficiaryByUserID(String userID) {
         Beneficiary beneficiary = new Beneficiary();
@@ -68,6 +72,11 @@ public class BeneficiaryRepository {
         Beneficiary beneficiary = dynamoDBMapper.load(Beneficiary.class, id);
         dynamoDBMapper.delete(beneficiary);
         return true;
+    }
+
+    public List<Beneficiary> getAllBeneficiaries() {
+//        Amazon
+        return dynamoDBMapper.scan(Beneficiary.class, new DynamoDBScanExpression());
     }
 }
 

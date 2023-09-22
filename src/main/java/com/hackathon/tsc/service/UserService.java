@@ -74,4 +74,8 @@ public class UserService {
     public boolean deleteBeneficiary(String beneficiaryID) {
         return beneficiaryRepository.deleteBeneficiary(beneficiaryID);
     }
+
+    public List<Beneficiary> getAllBeneficiaries() {
+        return beneficiaryRepository.getAllBeneficiaries();
+    }
 }
