@@ -20,6 +20,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 
 @RestController
+@RequestMapping("/tsc")
 public class LoginController {
 
     @Autowired

@@ -47,4 +47,7 @@ public class Service {
 
     @DynamoDBAttribute
     private List<String> supportingDocs;
+
+    @DynamoDBAttribute
+    private String alignedNeed;
 }

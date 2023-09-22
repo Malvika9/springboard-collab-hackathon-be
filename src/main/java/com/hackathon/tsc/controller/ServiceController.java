@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/services")
+@RequestMapping("/tsc/services")
 public class ServiceController {
 
     @Autowired
@@ -32,12 +32,15 @@ public class ServiceController {
         }
     }
 
-
-//    @GetMapping("/{beneficiaryID}")
-//    public ResponseEntity<List<String>> getGoals(@PathVariable String beneficiaryID){
-//        List<String> needs = services.getNeedForBID(beneficiaryID);
-//        return new ResponseEntity<>(needs, HttpStatus.OK);
-//    }
+    @GetMapping("/{beneficiaryID}")
+    public ResponseEntity<List<String>> getGoals(@PathVariable String beneficiaryID){
+        try {
+            List<String> needs = services.getNeedForBID(beneficiaryID);
+            return new ResponseEntity<>(needs, HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @PostMapping
     public ResponseEntity<List<Service>> addService(@RequestBody Service serviceToAdd) {
