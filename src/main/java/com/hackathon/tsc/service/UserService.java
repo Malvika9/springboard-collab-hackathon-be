@@ -68,6 +68,7 @@ public class UserService {
 
     public Beneficiary addBeneficiary(Beneficiary newBeneficiary) {
         beneficiaryRepository.save(newBeneficiary);
+        serviceRepository.addDefaultService(newBeneficiary.getBeneficiaryID());
         return newBeneficiary;
     }
 

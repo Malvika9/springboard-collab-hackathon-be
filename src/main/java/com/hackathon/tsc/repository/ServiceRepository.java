@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.*;
 
 @Slf4j
@@ -97,5 +99,18 @@ public class ServiceRepository {
         else {
             return new ArrayList<>();
         }
+    }
+
+    public Service addDefaultService(String beneficiaryID){
+        Service service = new Service();
+        service.setServiceID(String.valueOf(System.currentTimeMillis()));
+        service.setStatus("IN PROGRESS");
+        service.setServiceName("TSC Service");
+        String comment = "Service " + service.getServiceName() + " is " + service.getStatus();
+        service.setActivityLog(List.of(new Activity(comment, Instant.now().toString())));
+        service.setBeneficiaryID(beneficiaryID);
+        service.setOrganizationName("The SpringBoard Collaborative");
+        dynamoDBMapper.save(service);
+        return service;
     }
 }

@@ -43,7 +43,7 @@ public class Services {
         return servicesRepository.getServicesForId(UserType.NAVIGATOR, service.getNavigatorID(), service.getBeneficiaryID());
     }
 
-    public List<Service> deleteServiceForBID(String navigatorID, String serviceID) throws ServiceNotFoundException, UserNotFoundException {
+    public List<Service> deleteServiceForBID(String navigatorID, String serviceID) throws UserNotFoundException {
         Optional<String> userType = loginRepository.getUserTypeByUserID(navigatorID);
         if (userType.isPresent() && userType.get().equals(UserType.NAVIGATOR)) {
             Service service = servicesRepository.getServiceById(serviceID).get();
@@ -53,7 +53,7 @@ public class Services {
         throw new UserNotFoundException(USER_NOT_LOGGED_IN);
     }
 
-    public List<Service> updateService(String id, Service updatedService) throws ServiceNotFoundException, UserNotFoundException {
+    public List<Service> updateService(String id, Service updatedService) throws ServiceNotFoundException {
         servicesRepository.updateService(updatedService);
         Optional<String> user = loginRepository.getUserTypeByUserID(id);
         if (user.isPresent() && user.get().equals(UserType.NAVIGATOR)) {

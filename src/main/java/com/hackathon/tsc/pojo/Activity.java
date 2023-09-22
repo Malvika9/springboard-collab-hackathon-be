@@ -4,11 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.Nullable;
-
-import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -20,6 +16,6 @@ public class Activity {
     private String comment;
 
     @DynamoDBAttribute
-    private Timestamp timeStamp;
+    private String timeStamp;
 
 }

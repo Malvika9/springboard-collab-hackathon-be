@@ -34,13 +34,6 @@ public class ServiceController {
         }
     }
 
-
-//    @GetMapping("/{beneficiaryID}")
-//    public ResponseEntity<List<String>> getGoals(@PathVariable String beneficiaryID){
-//        List<String> needs = services.getNeedForBID(beneficiaryID);
-//        return new ResponseEntity<>(needs, HttpStatus.OK);
-//    }
-
     @PostMapping
     public ResponseEntity<List<Service>> addService(@RequestBody Service serviceToAdd) {
         try {
