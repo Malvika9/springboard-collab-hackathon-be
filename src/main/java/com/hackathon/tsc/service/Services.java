@@ -1,8 +1,10 @@
 package com.hackathon.tsc.service;
 
 import com.hackathon.tsc.constant.UserType;
+import com.hackathon.tsc.entity.Beneficiary;
 import com.hackathon.tsc.exception.ServiceNotFoundException;
 import com.hackathon.tsc.exception.UserNotFoundException;
+import com.hackathon.tsc.repository.BeneficiaryRepository;
 import com.hackathon.tsc.repository.LoginRepository;
 import com.hackathon.tsc.repository.ServiceRepository;
 import com.hackathon.tsc.entity.Service;
@@ -21,6 +23,9 @@ public class Services {
     private ServiceRepository servicesRepository;
     @Autowired
     private LoginRepository loginRepository;
+
+    @Autowired
+    private BeneficiaryRepository beneficiaryRepository;
 
     @Autowired
     private LoginService loginService;
@@ -67,4 +72,13 @@ public class Services {
         return servicesRepository.getServiceById(id).get();
     }
 
+    public List<String> getNeedForBID(String beneficiaryID) throws UserNotFoundException {
+        Optional<Beneficiary> beneficiary = beneficiaryRepository.getBeneficiaryByUserID(beneficiaryID);
+        if(beneficiary.isPresent())
+        {
+            return beneficiary.get().getNeed();
+        }
+        else
+            throw new UserNotFoundException(USER_NOT_FOUND);
+    }
 }

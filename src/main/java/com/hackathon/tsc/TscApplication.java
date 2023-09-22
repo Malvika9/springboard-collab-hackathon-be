@@ -19,7 +19,7 @@ public class TscApplication {
 		return new WebMvcConfigurerAdapter() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/tsc").allowedOrigins("https://tsavcussib.us-east-1.awsapprunner.com");
+				registry.addMapping("/*").allowedOrigins("*");
 			}
 		};
 	}

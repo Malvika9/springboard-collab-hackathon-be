@@ -90,4 +90,14 @@ public class ServiceController {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/{beneficiaryID}")
+    public ResponseEntity<List<String>> getGoals(@PathVariable String beneficiaryID){
+        try {
+            List<String> needs = services.getNeedForBID(beneficiaryID);
+            return new ResponseEntity<>(needs, HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
