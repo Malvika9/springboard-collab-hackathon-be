@@ -53,7 +53,6 @@ public class UserService {
     public List<Beneficiary> getUnassignedBeneficiaries() {
         //query and return unassigned beneficiaries
         List<Beneficiary> assignedBeneficiaries = new ArrayList<>();
-        assignedBeneficiaries.add(example);
         return assignedBeneficiaries;
     }
 
