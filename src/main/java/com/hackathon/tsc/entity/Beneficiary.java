@@ -23,6 +23,12 @@ public class Beneficiary {
     private String cabinNo;
 
     @DynamoDBAttribute
+    private String firstName;
+
+    @DynamoDBAttribute
+    private String lastName;
+
+    @DynamoDBAttribute
     private List<String> mhProvider;
 
     @DynamoDBAttribute
