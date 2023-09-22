@@ -32,8 +32,8 @@ public class AwsConfig {
                 .withCredentials(
                         new AWSStaticCredentialsProvider(
                                 new BasicAWSCredentials(
-                                        "AKIAWQYQP5GC75FMBL66",
-                                        "xMcWS/ouUqS3ojsVhWHXXRoTemkjpZgwHkPSI59p"
+                                        "***",
+                                        "*****"
                                 )
                         )
                 )
@@ -42,8 +42,8 @@ public class AwsConfig {
 
     @Bean
     public AmazonS3 s3(){
-        AWSCredentials awsCredentials=new BasicAWSCredentials("AKIAWQYQP5GCZUBHLGUU",
-                "h0gGtdMpA99pgx2qeo+eFEVtcY51clfdx8sGUr8/");
+        AWSCredentials awsCredentials=new BasicAWSCredentials("***",
+                "***");
         return AmazonS3ClientBuilder.standard().withRegion("ap-southeast-2").withCredentials(new AWSStaticCredentialsProvider(awsCredentials)).build();
     }
 }
