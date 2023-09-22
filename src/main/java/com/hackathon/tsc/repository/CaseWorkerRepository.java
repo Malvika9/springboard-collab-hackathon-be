@@ -23,6 +23,6 @@ public class CaseWorkerRepository {
         caseWorker.setCaseWorkerID(userID);
         CaseWorker result = dynamoDBMapper.load(caseWorker,
                 new DynamoDBMapperConfig(DynamoDBMapperConfig.ConsistentReads.CONSISTENT));
-        return Optional.of(result);
+        return Optional.ofNullable(result);
     }
 }

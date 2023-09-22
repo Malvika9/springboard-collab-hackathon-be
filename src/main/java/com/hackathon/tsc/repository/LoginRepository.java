@@ -30,7 +30,7 @@ public class LoginRepository {
         user.setUserID(userID);
         User result = dynamoDBMapper.load(user,
                 new DynamoDBMapperConfig(DynamoDBMapperConfig.ConsistentReads.CONSISTENT));
-        return Optional.of(result.getUserType());
+        return Optional.ofNullable(result.getUserType());
 
     }
 
@@ -40,6 +40,6 @@ public class LoginRepository {
         user.setPassword(password);
         User result = dynamoDBMapper.load(user,
                 new DynamoDBMapperConfig(DynamoDBMapperConfig.ConsistentReads.CONSISTENT));
-        return Optional.of(result);
+        return Optional.ofNullable(result);
     }
 }

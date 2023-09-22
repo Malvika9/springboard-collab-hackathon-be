@@ -23,7 +23,7 @@ public class BeneficiaryRepository {
         beneficiary.setBeneficiaryID(userID);
         Beneficiary result = dynamoDBMapper.load(beneficiary,
                 new DynamoDBMapperConfig(DynamoDBMapperConfig.ConsistentReads.CONSISTENT));
-        return Optional.of(result);
+        return Optional.ofNullable(result);
     }
 
     public Beneficiary save(Beneficiary beneficiary) {

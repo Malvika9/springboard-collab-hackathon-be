@@ -38,7 +38,7 @@ public class ServiceRepository {
 
     public Optional<Service> getServiceById(String id) {
         Service service = dynamoDBMapper.load(Service.class, id);
-        return Optional.of(service);
+        return Optional.ofNullable(service);
     }
 
     public Service addService(Service service) {

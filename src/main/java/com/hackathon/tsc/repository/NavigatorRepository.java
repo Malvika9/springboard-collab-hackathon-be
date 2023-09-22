@@ -19,7 +19,7 @@ public class NavigatorRepository {
         navigator.setNavigatorID(userID);
         Navigator result = dynamoDBMapper.load(navigator,
                 new DynamoDBMapperConfig(DynamoDBMapperConfig.ConsistentReads.CONSISTENT));
-        return Optional.of(result);
+        return Optional.ofNullable(result);
     }
 
     public Navigator save(Navigator navigator) {
